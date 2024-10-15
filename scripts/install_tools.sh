@@ -19,4 +19,10 @@ dnf install wget -y
 wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz -P /var/www/html
 
 #Descomprimimos el archivo anterior
-tar xvf phpMyAdmin-latest-all-languages.tar.gz -C /var/www/html
+tar xvf /var/www/html/phpMyAdmin-latest-all-languages.tar.gz -C /var/www/html
+
+#Eliminamos el archivo tar.gz
+rm /var/www/html/phpMyAdmin-latest-all-languages.tar.gz
+
+#Renombramos el nombre del directorio de phpmyadmin
+mv /var/www/html/phpMyAdmin-5.2.1-all-languages/ /var/www/html/phpmyadmin
