@@ -35,12 +35,3 @@ systemctl restart httpd
 
 #Copiamos el index.php de prueba en /var/www/html
 cp ../php/index.php /var/www/html
-
-#Instalamos las dependencias necesarias para phpmyadmin
-dnf install php-mbstring php-zip php-json php-gd php-fpm php-xml -y
-
-#Reinciamos el servicio de Apache
-systemctl restart httpd
-
-#Instalamos la utilidad wget
-dnf install wget -y
