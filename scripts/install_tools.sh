@@ -46,3 +46,5 @@ mysql -u root < /var/www/html/phpmyadmin/sql/create_tables.sql
 mysql -u root <<< "DROP USER IF EXISTS $PMA_USER@'%'"
 mysql -u root <<< "CREATE USER $PMA_USER@'%' IDENTIFIED BY '$PMA_PASS'"
 mysql -u root <<< "GRANT ALL PRIVILEGES ON $PMA_DB.* TO $PMA_USER@'%'"
+
+sed -i "s/\(\$cfg\['blowfish_secret'\] =\).*/\1 '$RANDOM_VALUE';/" /var/www/html/phpmyadmin/config.inc.php
