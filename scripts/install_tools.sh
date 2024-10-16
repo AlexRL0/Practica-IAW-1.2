@@ -3,6 +3,9 @@
 #Configuramos para mostrar los comandos del script y para que la ejecución se detenga cuando hay un error
 set -ex
 
+#Importamos las variables de entorno
+source .env
+
 # Actualizamos los paquetes del sistema
 dnf update -y
 
@@ -32,3 +35,9 @@ mv /var/www/html/phpMyAdmin-5.2.1-all-languages/ /var/www/html/phpmyadmin
 
 #Modificamos el propietario y el grupo del directorio
 chown -R apache:apache /var/www/html/phpmyadmin
+
+#Creamos el archivo de configuración de phpMyAdmin
+cp /var/www/html/phpmyadmin/config.sample.inc.php /var/www/html/phpmyadmin/config.inc.php
+
+#Creamos la base de datos de phpMyAdmin
+mysql -u root < /var/www/html/phpmyadmin/sql/create_tables.sql
