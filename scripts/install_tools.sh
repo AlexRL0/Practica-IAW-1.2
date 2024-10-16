@@ -41,3 +41,8 @@ cp /var/www/html/phpmyadmin/config.sample.inc.php /var/www/html/phpmyadmin/confi
 
 #Creamos la base de datos de phpMyAdmin
 mysql -u root < /var/www/html/phpmyadmin/sql/create_tables.sql
+
+#Creamos un usuario para phpMyAdmin
+mysql -u root <<< "DROP USER IF EXISTS $PMA_USER@'%'"
+mysql -u root <<< "CREATE USER $PMA_USER@'%' IDENTIFIED BY '$PMA_PASS'"
+mysql -u root <<< "GRANT ALL PRIVILEGES ON $PMA_DB.* TO $PMA_USER@'%'"
