@@ -47,4 +47,11 @@ mysql -u root <<< "DROP USER IF EXISTS $PMA_USER@'%'"
 mysql -u root <<< "CREATE USER $PMA_USER@'%' IDENTIFIED BY '$PMA_PASS'"
 mysql -u root <<< "GRANT ALL PRIVILEGES ON $PMA_DB.* TO $PMA_USER@'%'"
 
+# Generamos un valor aleatorio de 32 caracteres para la variable blowfish_secret
+RANDOM_VALUE=`openssl rand -hex 16`
+
+# Modificamos la variable blowfish_secret en el archivo de configuración
 sed -i "s/\(\$cfg\['blowfish_secret'\] =\).*/\1 '$RANDOM_VALUE';/" /var/www/html/phpmyadmin/config.inc.php
+
+# Añadimos la configuración del directorio temporal
+sed -i "/blowfish_secret/a \$cfg\['TempDir'\] = '/tmp';" /var/www/html/phpmyadmin/config.inc.php 
