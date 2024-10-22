@@ -182,9 +182,77 @@ mv /var/www/html/phpMyAdmin-5.2.1-all-languages/ /var/www/html/phpmyadmin
 chown -R apache:apache /var/www/html/phpmyadmin
 ```
 
+> [!NOTE]  
+> Esto lo hacemos ya que hay que darle permisos al usuario de apache para que pueda leer el archivo del directorio, ya que si no lo hacemos, phpmyadmin no funcionará.
 
+## 2.3 Configuración de PHPMyAdmin
 
-## 2.3 Instalacion de Adminer
+Para configurar `phpmyadmin` hay que realizar lo siguiente:
+
+* Configurar el archivo de configuración `config.inc.php`.
+* Configuración de la base de datos para `phpMyAdmin`.  
+    * Creación de la base de datos.
+    * Creación de un usuario para la base de datos.
+
+### Paso 1: Creamos el archivo de configuración de phpMyAdmin
+
+```
+cp /var/www/html/phpmyadmin/config.sample.inc.php /var/www/html/phpmyadmin/config.inc.php
+```
+
+> [!IMPORTANT]  
+> El siguiente paso que haríamos sería modificar manualmente el archivo con `nano`, pero como estamos haciendo este archivo para que todo se automatize al ejecuartase,lo haremos todo en el archivo `install_tools.sh`. Las variables a configurar son las siguientes:
+>* `$cfg['blowfish_secret']`: En esta variable hay que configurar un valor aleatorio de 32 caracteres que se utiliza como clave secreta para cifrar las cookies de sesión de phpMyAdmin.
+>
+>* `$cfg['TempDir']`: Y esta variable lo que hace es configurar un directorio temporal.
+
+### Paso 2: Creamos la base de datos de phpMyAdmin
+
+```
+mysql -u root < /var/www/html/phpmyadmin/sql/create_tables.sql
+```
+
+### Paso 3: Creamos un usuario para phpMyAdmin
+
+```bash
+mysql -u root <<< "DROP USER IF EXISTS $PMA_USER@'%'"
+mysql -u root <<< "CREATE USER $PMA_USER@'%' IDENTIFIED BY '$PMA_PASS'"
+mysql -u root <<< "GRANT ALL PRIVILEGES ON $PMA_DB.* TO $PMA_USER@'%'"
+```
+
+### Paso 4: Generamos un valor aleatorio de 32 caracteres para la variable blowfish_secret
+
+```
+RANDOM_VALUE=`openssl rand -hex 16`
+```
+
+> [!IMPORTANT]  
+> Esto lo hacemos para que luego al cambiar el valor de la variable `blowfish_secret` se genere una clave aleatoria de 32 caracteres cada vez que ejecutemos este comando y lo implemente dentro de la variable.
+
+### Paso 5: Modificamos la variable blowfish_secret en el archivo de configuración
+
+```
+sed -i "s/\(\$cfg\['blowfish_secret'\] =\).*/\1 '$RANDOM_VALUE';/" /var/www/html/phpmyadmin/config.inc.php
+```
+
+> [!NOTE]  
+> El comando `sed` se utiliza para modificar y eliminar texto en un archivo. A continuación voy a explicar los parámetros que se han utilizado en el ejemplo anterior.  
+>* `i`: Indica que queremos que los cambios se apliquen directamente en el archivo que se pasa como parámetro. Si no se utilizase este paráemtro, los cambios se mostrarían por la salida estándar pero el archivo no se modificaría.
+>
+>* `s/cadena_a_buscar/cadena_de_reemplazo/`: Esta sintaxis es la que se utiliza para buscar y reemplazar texto en un archivo. En este caso, se busca la cadena `$cfg['blowfish_secret'] =` y se reemplaza por la cadena `$cfg['blowfish_secret'] = '$RANDOM_VALUE';`.
+>
+>* `\1 '$RANDOM_VALUE';`. El número `\1` quiere decir que se debe poner el patrón que hemos buscado, es decir, se pondrá `$cfg['blowfish_secret'] =` seguido del contenido de la variable `$RANDOM_VALUE`.
+
+### Paso 6: Añadimos la configuración del directorio temporal
+
+```
+sed -i "/blowfish_secret/a \$cfg\['TempDir'\] = '/tmp';" /var/www/html/phpmyadmin/config.inc.php 
+```
+
+> [!IMPORTANT]  
+> Para configurar esta variable vamos a utilizar el modificador `a` que permite añadir texto después de una línea que coincida con lo que estamos buscando.
+
+## 2.4 Instalacion de Adminer
 
 ### Paso 1: Creamos un directorio para adminer
 
@@ -197,8 +265,6 @@ mkdir -p /var/www/html/adminer
 ```
 wget https://github.com/vrana/adminer/releases/download/v4.8.1/adminer-4.8.1-mysql.php -P /var/www/html/adminer
 ```
-
-**Con el comando `wget` nos descargamos el archivo de adminer y con el parámetro `-p` le indicamos la ruta donde lo queremos guardar.**
 
 ### Paso 3: Renombramos el nombre del script de Adminer
 
