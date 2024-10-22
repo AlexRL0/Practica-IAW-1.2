@@ -91,6 +91,10 @@ systemctl restart httpd
 cp ../php/index.php /var/www/html
 ```
 
+### Paso 5: comprobación de que la página funciona
+
+![](imagenes/pagina.png)
+
 ---
 ## 2. Creación del archivo `install_tools.sh` para la automatización del proceso de instalación
 
@@ -252,6 +256,11 @@ sed -i "/blowfish_secret/a \$cfg\['TempDir'\] = '/tmp';" /var/www/html/phpmyadmi
 > [!IMPORTANT]  
 > Para configurar esta variable vamos a utilizar el modificador `a` que permite añadir texto después de una línea que coincida con lo que estamos buscando.
 
+### Paso 7: comprobación de que `phpmyadmin` funciona
+
+![](imagenes/phpmyadmin.png)
+
+
 ## 2.4 Instalacion de Adminer
 
 ### Paso 1: Creamos un directorio para adminer
@@ -278,7 +287,7 @@ mv /var/www/html/adminer/adminer-4.8.1-mysql.php /var/www/html/adminer/index.php
 ### Paso 4. Modificamos el propietario y el grupo del archivo
 
 ```
-chown -R www-data:www-data /var/www/html/adminer
+chown -R apache:apache /var/www/html/adminer
 ```
 
 **Una vez más tenemos que darle permisos al grupo y usuario de apache para que pueda leer el archivo.**
