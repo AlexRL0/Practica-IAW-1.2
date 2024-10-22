@@ -55,3 +55,19 @@ sed -i "s/\(\$cfg\['blowfish_secret'\] =\).*/\1 '$RANDOM_VALUE';/" /var/www/html
 
 # Añadimos la configuración del directorio temporal
 sed -i "/blowfish_secret/a \$cfg\['TempDir'\] = '/tmp';" /var/www/html/phpmyadmin/config.inc.php 
+
+# Creamos un directorio para adminer
+
+mkdir -p /var/www/html/adminer
+
+# Instalamos Adminer
+
+wget https://github.com/vrana/adminer/releases/download/v4.8.1/adminer-4.8.1-mysql.php -P /var/www/html/adminer
+
+# Renombramos el nombre del script de Adminer
+
+mv /var/www/html/adminer/adminer-4.8.1-mysql.php /var/www/html/adminer/index.php
+
+# Modificamos el propietario y el grupo del archivo
+
+chown -R apache:apache /var/www/html/adminer
